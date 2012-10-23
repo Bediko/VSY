@@ -48,7 +48,6 @@ public class Server implements ServerInterface {
 		
 		try {
 			ServerInterface stub = (ServerInterface) UnicastRemoteObject.exportObject(server, 0);
-			// LocateRegistry.getRegistry().bind("Echo Service", stub);
 			Naming.bind("rmi://127.0.0.1:9090/server", stub);
 			
 			System.out.println("Server binded object successfull!");

@@ -9,12 +9,12 @@ public class Client implements ClientInterface {
 	private static Client instance;
 	
 	public Client() {
-		try {
-			UnicastRemoteObject.exportObject(this, 0);
-			instance = this;
-		} catch(RemoteException ex) {
-			System.out.println(ex.getMessage());
-		}
+//		try {
+//			UnicastRemoteObject.exportObject(this, 0);
+//			instance = this;
+//		} catch(RemoteException ex) {
+//			System.out.println(ex.getMessage());
+//		}
 	}
 	
 	@Override
@@ -25,9 +25,6 @@ public class Client implements ClientInterface {
 	
 	public static void main(String[] args) {
 		try {
-			// Registry registry = LocateRegistry.getRegistry();
-			
-			//ServerInterface remoteObj = (ServerInterface) registry.lookup("EchoService");
 			ServerInterface remoteObj = (ServerInterface) Naming.lookup("rmi://127.0.0.1:9090/server");
 			
 			Scanner scanner = new Scanner(System.in);
