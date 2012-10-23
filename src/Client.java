@@ -1,4 +1,3 @@
-package src;
 
 import java.rmi.Naming;
 import java.rmi.RemoteException;
