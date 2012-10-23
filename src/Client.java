@@ -29,7 +29,7 @@ public class Client implements ClientInterface {
 	public static void main(String[] args) {
 		try {
 			//Verbinden
-			ServerInterface remoteObj = (ServerInterface) Naming.lookup("rmi://127.0.0.1:9090/server");
+			ServerInterface remoteObj = (ServerInterface) Naming.lookup("rmi://127.0.0.1:9090/server1");
 			
 			//Logindaten abfragen
 			Scanner scanner = new Scanner(System.in);

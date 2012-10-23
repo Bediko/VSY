@@ -49,10 +49,24 @@ public class Server implements ServerInterface {
 	
 	public static void main(String[] args) {
 		Server server = new Server();
+		String[] names;
+		int secondary = 0;
 		
 		try {
 			ServerInterface stub = (ServerInterface) UnicastRemoteObject.exportObject(server, 0);
-			Naming.bind("rmi://127.0.0.1:9090/server", stub);
+			names = Naming.list("//localhost:9090/");
+			for (int i = 0; i < names.length; i++){
+				System.out.println(names[i]);
+				if (names[i].compareTo("//localhost:9090/server1") == 0){
+					secondary = 1;
+				}
+			}
+			if(secondary == 0){
+				Naming.rebind("rmi://127.0.0.1:9090/server1", stub);
+			}
+			else{
+				Naming.rebind("rmi://127.0.0.2:9090/server2", stub);
+			}
 			
 			System.out.println("Server binded object successfull!");
 			
