@@ -5,17 +5,18 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.Arrays;
 import java.util.Scanner;
 
+// hallo du ei
 
 public class Client implements ClientInterface {
 	private static Client instance;
 	
 	public Client() {
-//		try {
-//			UnicastRemoteObject.exportObject(this, 0);
-//			instance = this;
-//		} catch(RemoteException ex) {
-//			System.out.println(ex.getMessage());
-//		}
+		try {
+			UnicastRemoteObject.exportObject(this, 0);
+			instance = this;
+		} catch(RemoteException ex) {
+			System.out.println(ex.getMessage());
+		}
 	}
 	
 	@Override
