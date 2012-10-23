@@ -4,19 +4,21 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.Arrays;
+import java.util.HashMap;
 
 
-public class Server implements ServerInterface {
-	private UserStore userStore = new UserStore();
-	
-	public UserStore getUserStore() {
-		return userStore;
+public class Server extends UnicastRemoteObject implements ServerInterface {
+	private HashMap<String, ClientInterface> _userStore;
+
+
+	public Server() throws RemoteException {
+		_userStore = new HashMap<String, ClientInterface>();
 	}
-
+	
 	@Override
 	//Angemeldeten User speichern und begrüßen
 	public void register(String userName, ClientInterface clientObject) {
-		this.getUserStore().addUser(userName, clientObject);
+		_userStore.put(userName, clientObject);
 		
 		try {
 			clientObject.notifyMessage("Server", "Welcome " + userName);
@@ -28,19 +30,19 @@ public class Server implements ServerInterface {
 	@Override
 	//User abmelden
 	public void unregister(String username) {
-		this.getUserStore().removeUser(username);
+		_userStore.remove(username);
 	}
 
 	@Override
 	// alle angemeldeten User abfragen
 	public String[] getAllUser() {
-		return this.getUserStore().getAllUser();
+		return _userStore.keySet().toArray(new String[0]);
 	}
 
 	@Override
 	//Nachricht von User an anderen User weiterleiten
 	public void sendMessage(String sender, String receiver, String message) throws RemoteException {
-		ClientInterface client = this.getUserStore().getClientByName(receiver);
+		ClientInterface client = _userStore.get(receiver);
 		
 		if(client != null)
 			client.notifyMessage(sender, message);
@@ -48,35 +50,36 @@ public class Server implements ServerInterface {
 	
 	
 	public static void main(String[] args) {
-		Server server = new Server();
+		System.setSecurityManager(new SecurityManager());
+
 		String[] names;
-		int secondary = 0;
+		boolean secondary = false;
 		
 		try {
-			ServerInterface stub = (ServerInterface) UnicastRemoteObject.exportObject(server, 0);
+			Server server = new Server();
 			names = Naming.list("//localhost:9090/");
 			for (int i = 0; i < names.length; i++){
 				System.out.println(names[i]);
 				if (names[i].compareTo("//localhost:9090/server1") == 0){
-					secondary = 1;
+					secondary = true;
 				}
 			}
-			if(secondary == 0){
-				Naming.rebind("rmi://127.0.0.1:9090/server1", stub);
+			if(secondary == false){
+				Naming.rebind("rmi://127.0.0.1:9090/server1", server);
 			}
 			else{
-				Naming.rebind("rmi://127.0.0.2:9090/server2", stub);
+				Naming.rebind("rmi://127.0.0.2:9090/server2", server);
 			}
 			
 			System.out.println("Server binded object successfull!");
 			
-			while(server.userStore.getAllUser().length == 0) {
+			while(server._userStore.keySet().toArray(new String[0]).length == 0) {
 				System.out.println("No clients registered!");
 				Thread.sleep(5000);
 			}
 			
 			while(true) {
-				System.out.println("Users registered: " + Arrays.toString(server.userStore.getAllUser()));
+				System.out.println("Users registered: " + Arrays.toString(server._userStore.keySet().toArray(new String[0])));
 				Thread.sleep(15000);
 			}
 			
