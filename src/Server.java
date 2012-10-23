@@ -14,6 +14,7 @@ public class Server implements ServerInterface {
 	}
 
 	@Override
+	//Angemeldeten User speichern und begrüßen
 	public void register(String userName, ClientInterface clientObject) {
 		this.getUserStore().addUser(userName, clientObject);
 		
@@ -25,16 +26,19 @@ public class Server implements ServerInterface {
 	}
 	
 	@Override
+	//User abmelden
 	public void unregister(String username) {
 		this.getUserStore().removeUser(username);
 	}
 
 	@Override
+	// alle angemeldeten User abfragen
 	public String[] getAllUser() {
 		return this.getUserStore().getAllUser();
 	}
 
 	@Override
+	//Nachricht von User an anderen User weiterleiten
 	public void sendMessage(String sender, String receiver, String message) throws RemoteException {
 		ClientInterface client = this.getUserStore().getClientByName(receiver);
 		

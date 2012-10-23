@@ -5,7 +5,7 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.Arrays;
 import java.util.Scanner;
 
-// hallo du ei
+
 
 public class Client implements ClientInterface {
 	private static Client instance;
@@ -20,6 +20,7 @@ public class Client implements ClientInterface {
 	}
 	
 	@Override
+	//Gibt empfangene Nachricht aus
 	public void notifyMessage(String sender, String message) {
 		System.out.println("\n>>>>> " + sender + " says " + message);		
 	}
@@ -27,14 +28,18 @@ public class Client implements ClientInterface {
 	
 	public static void main(String[] args) {
 		try {
+			//Verbinden
 			ServerInterface remoteObj = (ServerInterface) Naming.lookup("rmi://127.0.0.1:9090/server");
 			
+			//Logindaten abfragen
 			Scanner scanner = new Scanner(System.in);
 			System.out.println("Username: ");
 			String username = scanner.next();
 			
+			//einloggen
 			remoteObj.register(username, new Client());
 			
+			//Userinterface ausgeben
 			System.out.println("Users registered: " + Arrays.toString(remoteObj.getAllUser()));
 			System.out.println("exit - exit from commandline");
 			System.out.println("list - list all users");
@@ -44,7 +49,8 @@ public class Client implements ClientInterface {
 			String receiver = null;
 			boolean userIsRegistered = false;
 			boolean closeSession = false;
-			
+		
+			//Endlosschleife zum bedienen des Interfaces
 			while(!closeSession) {
 				System.out.println(">>>>> ");
 				text = scanner.nextLine();
