@@ -1,3 +1,4 @@
+import java.net.MalformedURLException;
 import java.rmi.AlreadyBoundException;
 import java.rmi.Naming;
 import java.rmi.RemoteException;
@@ -51,16 +52,20 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
 			client.notifyMessage(sender, message);
 	}
 	
+	public boolean is_secondary() throws RemoteException, MalformedURLException{
+		names = Naming.list("//localhost:9090/");
+		for (int i = 0; i < names.length; i++){
+			System.out.println(names[i]);
+			if (names[i].compareTo("//localhost:9090/server1") == 0){
+				secondary = true;
+			}
+		}
+		return secondary;
+	};
+	
 	public void connect(){
 		try {
-			names = Naming.list("//localhost:9090/");
-			for (int i = 0; i < names.length; i++){
-				System.out.println(names[i]);
-				if (names[i].compareTo("//localhost:9090/server1") == 0){
-					secondary = true;
-				}
-			}
-			if(secondary == false){
+			if(!is_secondary()){
 				Naming.rebind("rmi://127.0.0.1:9090/server1", server);
 			}
 			else{
