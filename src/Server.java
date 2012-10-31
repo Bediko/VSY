@@ -1,6 +1,7 @@
 import java.net.MalformedURLException;
 import java.rmi.AlreadyBoundException;
 import java.rmi.Naming;
+import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.server.UnicastRemoteObject;
@@ -36,6 +37,11 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
 	public void unregister(String username) {
 		_userStore.remove(username);
 	}
+	
+	@Override
+	public boolean ping(){
+		return true;
+	}
 
 	@Override
 	// alle angemeldeten User abfragen
@@ -52,15 +58,17 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
 			client.notifyMessage(sender, message);
 	}
 	
-	public boolean is_secondary() throws RemoteException, MalformedURLException{
-		names = Naming.list("//localhost:9090/");
-		for (int i = 0; i < names.length; i++){
-			System.out.println(names[i]);
-			if (names[i].compareTo("//localhost:9090/server1") == 0){
-				secondary = true;
+	public boolean is_secondary(){
+		try{
+			ServerInterface remoteObj = (ServerInterface) Naming.lookup("rmi://127.0.0.1:9090/server1");
+			if(remoteObj.ping()){
+				secondary=true;
 			}
+			return secondary;
+		}catch(Exception ex){
+			System.out.println(ex.getMessage());
+			return secondary;
 		}
-		return secondary;
 	};
 	
 	public void connect(){
@@ -69,12 +77,20 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
 				Naming.rebind("rmi://127.0.0.1:9090/server1", server);
 			}
 			else{
+				try {
+					ServerInterface remoteObj = (ServerInterface) Naming.lookup("rmi://127.0.0.1:9090/server2");
+					remoteObj.ping();
+					System.exit(0);
+				}
+				catch(Exception ex){
 				Naming.rebind("rmi://127.0.0.2:9090/server2", server);
+				}
 			}
 			
 			System.out.println("Server binded object successfull!");	
 		} catch(Exception ex) {
 			System.out.println(ex.getMessage());
+			System.exit(0);
 		}
 		
 	};
