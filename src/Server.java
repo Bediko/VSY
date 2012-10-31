@@ -9,10 +9,13 @@ import java.util.HashMap;
 
 public class Server extends UnicastRemoteObject implements ServerInterface {
 	private HashMap<String, ClientInterface> _userStore;
-
+	private String[] names;
+	private boolean secondary;
+	private static Server server;
 
 	public Server() throws RemoteException {
 		_userStore = new HashMap<String, ClientInterface>();
+		secondary = false;
 	}
 	
 	@Override
@@ -48,15 +51,8 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
 			client.notifyMessage(sender, message);
 	}
 	
-	
-	public static void main(String[] args) {
-		System.setSecurityManager(new SecurityManager());
-
-		String[] names;
-		boolean secondary = false;
-		
+	public void connect(){
 		try {
-			Server server = new Server();
 			names = Naming.list("//localhost:9090/");
 			for (int i = 0; i < names.length; i++){
 				System.out.println(names[i]);
@@ -71,8 +67,21 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
 				Naming.rebind("rmi://127.0.0.2:9090/server2", server);
 			}
 			
-			System.out.println("Server binded object successfull!");
-			
+			System.out.println("Server binded object successfull!");	
+		} catch(Exception ex) {
+			System.out.println(ex.getMessage());
+		}
+		
+	};
+	
+	
+	
+	public static void main(String[] args) {
+		System.setSecurityManager(new SecurityManager());
+		
+		try {
+			server = new Server();
+			server.connect();
 			while(server._userStore.keySet().toArray(new String[0]).length == 0) {
 				System.out.println("No clients registered!");
 				Thread.sleep(5000);
