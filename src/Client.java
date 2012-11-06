@@ -6,7 +6,11 @@ import java.util.Arrays;
 import java.util.Scanner;
 
 
-
+/**
+ * Client implementation of a instant messenger
+ * @author Michael, Simon
+ *
+ */
 public class Client implements ClientInterface {
 	private static Client instance;
 	
@@ -19,13 +23,19 @@ public class Client implements ClientInterface {
 		}
 	}
 	
+	/**
+	 * Prints a received message in the client terminal
+	 */
 	@Override
-	//Gibt empfangene Nachricht aus
 	public void notifyMessage(String sender, String message) {
 		System.out.println("\n>>>>> " + sender + " says " + message);		
 	}
 	
-	
+	/**
+	 * 
+	 * Connects to a server and asks for a user name before it registers the user to the server. 
+	 * Then it prints the Interface and waits for commands.
+	 */
 	public static void main(String[] args) {
 		try {
 			//Verbinden

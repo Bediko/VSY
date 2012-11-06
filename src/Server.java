@@ -7,7 +7,11 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.Arrays;
 import java.util.HashMap;
-
+/**
+ * A server implementation of an instant messenger.
+ * @author Michael, Simon
+ *
+ */
 
 public class Server extends UnicastRemoteObject implements ServerInterface {
 	private HashMap<String, ClientInterface> _userStore;
@@ -20,8 +24,12 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
 		secondary = false;
 	}
 	
+	/**
+	 * Registers user on the server and greets them
+	 * @param userName Name of the user which will be registered
+	 * @param clientObject The client interface which calls the register method
+	 */
 	@Override
-	//Angemeldeten User speichern und begrüßen
 	public void register(String userName, ClientInterface clientObject) {
 		_userStore.put(userName, clientObject);
 		
@@ -31,33 +39,49 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
 			System.out.println(ex.getMessage());
 		}
 	}
-	
-	@Override
-	//User abmelden
+	/**
+	 * Unregisters a user from the server.
+	 * @param username Name of the user which will be unregistered
+	 */
+	@Override	
 	public void unregister(String username) {
 		_userStore.remove(username);
 	}
 	
+	/**
+	 * Function to check, if the other server is online and responding
+	 */
 	@Override
 	public boolean ping(){
 		return true;
 	}
 
+	/**
+	 * Gets all users which are registered at the server.
+	 * @return Array of Strings with the user names
+	 */
 	@Override
-	// alle angemeldeten User abfragen
 	public String[] getAllUser() {
 		return _userStore.keySet().toArray(new String[0]);
 	}
-
+	
+	/**
+	 * Gets a message from a client and sends it to another client
+	 * @param sender User name who sends the message
+	 * @param receiver User name to where the message should be delivered
+	 * @param message The message which should be send
+	 */
 	@Override
-	//Nachricht von User an anderen User weiterleiten
 	public void sendMessage(String sender, String receiver, String message) throws RemoteException {
 		ClientInterface client = _userStore.get(receiver);
 		
 		if(client != null)
 			client.notifyMessage(sender, message);
 	}
-	
+	/**
+	 * Determinate if the server will be the primary or the secondary server
+	 * @return True when Server is secondary, false otherwise
+	 */
 	public boolean is_secondary(){
 		try{
 			ServerInterface remoteObj = (ServerInterface) Naming.lookup("rmi://127.0.0.1:9090/server1");
@@ -70,7 +94,10 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
 			return secondary;
 		}
 	};
-	
+	/**
+	 * Registers the server at the rmi registry. 
+	 * The binded address depends if the server is secondary or not.
+	 */
 	public void connect(){
 		try {
 			if(!is_secondary()){
@@ -96,7 +123,11 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
 	};
 	
 	
-	
+	/**
+	 * 
+	 * Main function which will connect the server and informs the admin in intervals which users are 
+	 * online
+	 */
 	public static void main(String[] args) {
 		System.setSecurityManager(new SecurityManager());
 		
