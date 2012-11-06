@@ -38,18 +38,18 @@ public class Client implements ClientInterface {
 	 */
 	public static void main(String[] args) {
 		try {
-			//Verbinden
+			
 			ServerInterface remoteObj = (ServerInterface) Naming.lookup("rmi://127.0.0.1:9090/server1");
 			
-			//Logindaten abfragen
+			
 			Scanner scanner = new Scanner(System.in);
 			System.out.println("Username: ");
 			String username = scanner.next();
 			
-			//einloggen
+			
 			remoteObj.register(username, new Client());
 			
-			//Userinterface ausgeben
+			
 			System.out.println("Users registered: " + Arrays.toString(remoteObj.getAllUser()));
 			System.out.println("exit - exit from commandline");
 			System.out.println("list - list all users");
@@ -60,7 +60,7 @@ public class Client implements ClientInterface {
 			boolean userIsRegistered = false;
 			boolean closeSession = false;
 		
-			//Endlosschleife zum bedienen des Interfaces
+			
 			while(!closeSession) {
 				System.out.println(">>>>> ");
 				text = scanner.nextLine();
