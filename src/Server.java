@@ -22,7 +22,10 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
 	
 	@Override
 	//Angemeldeten User speichern und begrüßen
-	public void register(String userName, ClientInterface clientObject) {
+	public boolean register(String userName, ClientInterface clientObject) {
+		if (_userStore.get(userName) != null)
+			return false;
+		
 		_userStore.put(userName, clientObject);
 		
 		try {
@@ -30,6 +33,7 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
 		} catch(RemoteException ex) {
 			System.out.println(ex.getMessage());
 		}
+		return true;
 	}
 	
 	@Override
@@ -69,12 +73,13 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
 			System.out.println(ex.getMessage());
 			return secondary;
 		}
-	};
+	}
 	
 	public void connect(){
 		try {
 			if(!is_secondary()){
 				Naming.rebind("rmi://127.0.0.1:9090/server1", server);
+				System.out.println("Server 1");
 			}
 			else{
 				try {
@@ -83,7 +88,8 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
 					System.exit(0);
 				}
 				catch(Exception ex){
-				Naming.rebind("rmi://127.0.0.2:9090/server2", server);
+					Naming.rebind("rmi://127.0.0.2:9090/server2", server);
+					System.out.println("Server 2");
 				}
 			}
 			
@@ -93,7 +99,7 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
 			System.exit(0);
 		}
 		
-	};
+	}
 	
 	
 	
