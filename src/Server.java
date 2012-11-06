@@ -28,9 +28,13 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
 	 * Registers user on the server and greets them
 	 * @param userName Name of the user which will be registered
 	 * @param clientObject The client interface which calls the register method
+	 * @return True if user name is free, false otherwise
 	 */
 	@Override
-	public void register(String userName, ClientInterface clientObject) {
+	public boolean register(String userName, ClientInterface clientObject) {
+		if (_userStore.get(userName) != null)
+			return false;
+		
 		_userStore.put(userName, clientObject);
 		
 		try {
@@ -38,6 +42,7 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
 		} catch(RemoteException ex) {
 			System.out.println(ex.getMessage());
 		}
+		return true;
 	}
 	/**
 	 * Unregisters a user from the server.
@@ -93,7 +98,8 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
 			System.out.println(ex.getMessage());
 			return secondary;
 		}
-	};
+	}
+
 	/**
 	 * Registers the server at the rmi registry. 
 	 * The binded address depends if the server is secondary or not.
@@ -102,6 +108,7 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
 		try {
 			if(!is_secondary()){
 				Naming.rebind("rmi://127.0.0.1:9090/server1", server);
+				System.out.println("Server 1");
 			}
 			else{
 				try {
@@ -110,7 +117,8 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
 					System.exit(0);
 				}
 				catch(Exception ex){
-				Naming.rebind("rmi://127.0.0.2:9090/server2", server);
+					Naming.rebind("rmi://127.0.0.2:9090/server2", server);
+					System.out.println("Server 2");
 				}
 			}
 			
@@ -120,14 +128,10 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
 			System.exit(0);
 		}
 		
-	};
+	}
 	
 	
-	/**
-	 * 
-	 * Main function which will connect the server and informs the admin in intervals which users are 
-	 * online
-	 */
+	
 	public static void main(String[] args) {
 		System.setSecurityManager(new SecurityManager());
 		
