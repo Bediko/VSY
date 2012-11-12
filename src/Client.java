@@ -73,20 +73,18 @@ public class Client implements ClientInterface {
 	public boolean login() {
 		boolean loggedIn = false;
 		
-		try {
-			
-			
+		try {			
 			while(loggedIn == false) {
 				System.out.println("Username: ");
 				_username = _scanner.next();
-				loggedIn = _remoteObj.register(_username, new Client());
+				loggedIn = _remoteObj.register(_username, new Client(), ServerInterface.CLIENT);
 			}
-			
 		} catch(Exception ex){
+			if(connect())
+				return login();
 			System.out.println("A Login-Error occured: " + ex.getMessage());
 			return false;
 		}
-		
 		return true;
 	}
 	
@@ -113,6 +111,8 @@ public class Client implements ClientInterface {
 		try {
 			return _remoteObj.getAllUser();
 		} catch(RemoteException ex) {
+			if(connect())
+				return getUserList();
 			System.out.println("Cannot get UserList!");
 		}
 		return null;
@@ -132,6 +132,8 @@ public class Client implements ClientInterface {
 				}
 			}
 		} catch(RemoteException ex) {
+			if(connect())
+				return changeUser(receiver);
 			System.out.println("Cannot get User list");
 		}
 		_receiver = _username;
@@ -145,8 +147,12 @@ public class Client implements ClientInterface {
 		_scanner.close();
 		try {
 			UnicastRemoteObject.unexportObject(_instance, true);
-			_remoteObj.unregister(_username);
+			_remoteObj.unregister(_username, ServerInterface.CLIENT);
 		} catch(Exception ex) {
+			if(connect()) {
+				exit();
+				return;
+			}
 			System.out.println("Error on exit");
 			System.out.println(ex.getMessage());
 		}
@@ -158,8 +164,12 @@ public class Client implements ClientInterface {
 	 */
 	public void sendMessage(String message) {
 		try {
-			_remoteObj.sendMessage(_username, _receiver, message);
+			_remoteObj.sendMessage(_username, _receiver, message, ServerInterface.CLIENT);
 		} catch (RemoteException e) {
+			if(connect()) {
+				sendMessage(message);
+				return;
+			}
 			System.out.println("Error while sending message");
 		}
 	}
