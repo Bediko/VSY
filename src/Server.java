@@ -5,6 +5,9 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.server.UnicastRemoteObject;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.HashMap;
 /**
@@ -20,6 +23,7 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
 	private static Server server;
 	private ServerInterface backupServer;
 	public boolean initRequested;
+	private Connection db;
 	
 	
 	/**
@@ -220,6 +224,23 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
 		
 	}
 	
+	/**
+	 * Connects to the database
+	 */
+	public void connect_db(){
+		
+		try {
+			Class.forName("org.postgresql.Driver");
+		} catch (ClassNotFoundException e1) {
+			e1.printStackTrace();
+		}
+		
+		try {
+			db = DriverManager.getConnection("jdbc:postgresql://localhost/vsy","vsy","vsy");
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
 	
 	
 	public static void main(String[] args) {
@@ -228,6 +249,7 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
 		try {
 			server = new Server();
 			server.connect();
+			server.connect_db();
 			
 			while(true) {
 				if(server.getBackupServer() != null) {
