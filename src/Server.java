@@ -24,6 +24,7 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
 	private ServerInterface backupServer;
 	public boolean initRequested;
 	private Connection db;
+	private String name;
 	
 	
 	/**
@@ -185,7 +186,7 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
 			}
 			return secondary;
 		}catch(Exception ex){
-			System.out.println(ex.getMessage());
+			System.out.println("No Server found, assume to be primary Server");
 			return secondary;
 		}
 	}
@@ -197,7 +198,8 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
 	public void connect(){
 		try {
 			if(!is_secondary()){
-				Naming.rebind("rmi://127.0.0.1:9090/server1", server);
+				name ="rmi://127.0.0.1:9090/server1";
+				Naming.rebind(name, server);
 				System.out.println("Server 1");
 				connectBackupServer();
 				if(backupServer != null)
@@ -210,7 +212,8 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
 					System.exit(0);
 				}
 				catch(Exception ex){
-					Naming.rebind("rmi://127.0.0.2:9090/server2", server);
+					name="rmi://127.0.0.2:9090/server2";
+					Naming.rebind(name, server);
 					System.out.println("Server 2");
 					connectBackupServer();
 					backupServer.requestInit();
@@ -279,5 +282,13 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
 		} catch(Exception ex) {
 			System.out.println(ex.getMessage());
 		}
+		
 	}	
+	protected void finalize() throws Throwable {
+	    try {
+	           Naming.unbind(name);    // close open files
+	    } finally {
+	        super.finalize();
+	    }
+	}
 }
