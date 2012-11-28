@@ -53,6 +53,32 @@ public class Database {
 		return true;
 	}
 	
+	/**
+	 * checks if a User is in the database with the right password
+	 * @param user User who will be checked
+	 * @param password password of user
+	 * @return true if everything is okay false if user name or password wrong
+	 */
+	public boolean checkUser(String user, String password){
+		Statement st;
+		ResultSet rs;
+		String query;
+		
+		try {
+			st = conn.createStatement();
+			query="SELECT * from people WHERE name='"+user+"' AND password='"+password+"'";
+			rs = st.executeQuery(query);
+			if (rs.next()){
+				return true;
+			}
+			else{
+				return false;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
 		
 	
 	public static void main(String[] args) {
