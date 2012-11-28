@@ -1,0 +1,1 @@
+java -classpath ../postgresql-9.2-1000.jdbc4.jar:. -Djava.security.policy=../policy/java.policy.test Server

@@ -74,7 +74,9 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
 			connectBackupServer();
 			if(backupServer != null) {
 				for(String user : getAllUser()) {
-					backupServer.register(user, _userStore.get(user), ServerInterface.SERVER);
+					String password = "";
+					// TODO get password from Database
+					backupServer.register(user, password, _userStore.get(user), ServerInterface.SERVER);
 				}
 			}
 		} catch(Exception ex) {
@@ -89,6 +91,32 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
 		backupServer = null;
 	}
 	
+	
+	/**
+	 * registers a new User with Username and password
+	 * @param userName the Username to check and register
+	 * @param password the password to register
+	 * @return true if the username doesn't exist, false otherwise
+	 */
+	@Override
+	public boolean newUser(String userName, String password, int sentBy) {
+		// TODO implementation
+		//db.register(userName, password);
+		if((sentBy == ServerInterface.CLIENT) && (backupServer != null)) {
+			try {
+				backupServer.ping();
+				backupServer.newUser(userName, password, ServerInterface.SERVER);
+			} catch(Exception ex) {
+				System.out.println("backup Server not responding");
+				resetBackupServer();
+			}
+		}
+			
+		
+		return true;
+	}
+	
+	
 	/**
 	 * Registers user on the server and greets them
 	 * @param userName Name of the user which will be registered
@@ -97,7 +125,7 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
 	 * @return True if user name is free, false otherwise
 	 */
 	@Override
-	public boolean register(String userName, ClientInterface clientObject, int sentBy) {
+	public boolean register(String userName, String password, ClientInterface clientObject, int sentBy) {
 		if (_userStore.get(userName) != null)
 			return false;
 		
@@ -112,7 +140,7 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
 		if((sentBy == ServerInterface.CLIENT) && (backupServer != null)) {
 			try {
 				backupServer.ping();
-				backupServer.register(userName, clientObject, ServerInterface.SERVER);
+				backupServer.register(userName, password, clientObject, ServerInterface.SERVER);
 			} catch(Exception ex) {
 				System.out.println("backup Server not responding");
 				resetBackupServer();

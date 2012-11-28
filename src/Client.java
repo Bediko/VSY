@@ -14,7 +14,7 @@ import java.util.Scanner;
 public class Client implements ClientInterface {
 	private static Client _instance;
 	ServerInterface _remoteObj;
-	String _username, _receiver;
+	String _username, _receiver, _password;
 	public Scanner _scanner;
 	
 	public Client() {
@@ -25,6 +25,8 @@ public class Client implements ClientInterface {
 		} catch(RemoteException ex) {
 			System.out.println(ex.getMessage());
 		}
+		_username = "";
+		_password = "";
 	}
 	
 	/**
@@ -66,6 +68,25 @@ public class Client implements ClientInterface {
 	}
 	
 	
+	public boolean newUser() {
+		boolean loggedIn = false;
+		
+		System.out.println("Username: ");
+		_username = _scanner.nextLine();
+		System.out.println("Password: ");
+		_password = _scanner.nextLine();
+		try {
+			loggedIn = _remoteObj.newUser(_username, _password, ServerInterface.CLIENT);
+		} catch(Exception ex) {
+			if(connect())
+				return newUser();
+			System.out.println("A Login-Error occured: " + ex.getMessage());
+			return false;
+		}
+		return loggedIn;
+	}
+	
+	
 	/**
 	 * Prompts a Login dialog and tries to login on the server
 	 * @return Returns true if login was successful, else the returnvalue is false
@@ -73,11 +94,13 @@ public class Client implements ClientInterface {
 	public boolean login() {
 		boolean loggedIn = false;
 		
-		try {			
+		try {
 			while(loggedIn == false) {
 				System.out.println("Username: ");
 				_username = _scanner.next();
-				loggedIn = _remoteObj.register(_username, new Client(), ServerInterface.CLIENT);
+				System.out.println("Password: ");
+				_password = _scanner.next();
+				loggedIn = _remoteObj.register(_username, _password, new Client(), ServerInterface.CLIENT);
 			}
 		} catch(Exception ex){
 			if(connect())
@@ -85,6 +108,7 @@ public class Client implements ClientInterface {
 			System.out.println("A Login-Error occured: " + ex.getMessage());
 			return false;
 		}
+
 		return true;
 	}
 	
@@ -185,16 +209,22 @@ public class Client implements ClientInterface {
 			System.out.println("The Server is not responding. Please try again later!");
 			return;
 		}
-		
-		
-		if(client.login() == false)
+		Scanner scanner = new Scanner(System.in);
+		System.out.println("register - creates a new User");
+		System.out.println("login - log in with an existing Username");
+		String text = "";
+		text = scanner.nextLine();
+		if (text.equals("register") && !client.newUser())
 			return;
+		else if (text.equals("login") && !client.login())
+			return;
+		
+		
 
 		
 		client.paintUserInterface();
-		
-		Scanner scanner = new Scanner(System.in);
-		String text = "";
+
+		text = "";
 		String receiver = null;
 		boolean userIsRegistered = false;
 		boolean closeSession = false;
