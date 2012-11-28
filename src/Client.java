@@ -8,7 +8,7 @@ import java.util.Scanner;
 
 /**
  * Client implementation of a instant messenger
- * @author Michael, Simon
+ * 
  *
  */
 public class Client implements ClientInterface {

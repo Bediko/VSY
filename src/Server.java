@@ -284,11 +284,4 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
 		}
 		
 	}	
-	protected void finalize() throws Throwable {
-	    try {
-	           Naming.unbind(name);    // close open files
-	    } finally {
-	        super.finalize();
-	    }
-	}
 }
