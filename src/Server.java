@@ -23,8 +23,8 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
 	private static Server server;
 	private ServerInterface backupServer;
 	public boolean initRequested;
-	private Connection db;
 	private String name;
+	private static Database db;
 	
 	
 	/**
@@ -231,18 +231,7 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
 	 * Connects to the database
 	 */
 	public void connect_db(){
-		
-		try {
-			Class.forName("org.postgresql.Driver");
-		} catch (ClassNotFoundException e1) {
-			e1.printStackTrace();
-		}
-		
-		try {
-			db = DriverManager.getConnection("jdbc:postgresql://localhost/vsy","vsy","vsy");
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
+		db = new Database("jdbc:postgresql://localhost/vsy","vsy","vsy");
 	}
 	
 	
@@ -253,6 +242,8 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
 			server = new Server();
 			server.connect();
 			server.connect_db();
+			db.register("Test", "123");
+			db.register("Test", "123");
 			
 			while(true) {
 				if(server.getBackupServer() != null) {
