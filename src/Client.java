@@ -39,6 +39,18 @@ public class Client implements ClientInterface {
 		System.out.println("\n++++> " + sender + " says " + message);		
 	}
 	
+	
+//####################################################################################
+//###################### only relevant for the GUI ###################################
+//####################################################################################
+	@Override
+	public void updateUserList(String[] users) {
+		// only relevant for the GUI
+	}
+//####################################################################################
+//####################################################################################
+//####################################################################################
+	
 	/**
 	 *try to connect to one of the server. 3 retries for each.
 	 *@return Returns true if the connection was successful, else the returnvalue is false
@@ -100,7 +112,7 @@ public class Client implements ClientInterface {
 				_username = _scanner.next();
 				System.out.println("Password: ");
 				_password = _scanner.next();
-				loggedIn = _remoteObj.register(_username, _password, new Client(), ServerInterface.CLIENT);
+				loggedIn = _remoteObj.login(_username, _password, new Client(), ServerInterface.CLIENT);
 			}
 		} catch(Exception ex){
 			if(connect())
@@ -171,7 +183,7 @@ public class Client implements ClientInterface {
 		_scanner.close();
 		try {
 			UnicastRemoteObject.unexportObject(_instance, true);
-			_remoteObj.unregister(_username, ServerInterface.CLIENT);
+			_remoteObj.logout(_username, ServerInterface.CLIENT);
 		} catch(Exception ex) {
 			if(connect()) {
 				exit();

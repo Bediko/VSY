@@ -27,6 +27,26 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
 	private String name;
 	
 	
+
+//####################################################################################
+//###################### only relevant for the GUI ###################################
+//####################################################################################
+	public void notifyUserListChanged() {
+		try {
+			for(String user : _userStore.keySet()) {
+				System.out.println("user: "+user);
+				_userStore.get(user).updateUserList(getAllUser());
+			}
+		} catch (RemoteException e) {
+			System.out.println("Error: " + e.getMessage());
+		}
+	}
+//####################################################################################
+//####################################################################################
+//####################################################################################	
+	
+	
+	
 	/**
 	 * Method to get the reference to the backup-server
 	 * @return returns the reference to the backup-server
@@ -76,7 +96,7 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
 				for(String user : getAllUser()) {
 					String password = "";
 					// TODO get password from Database
-					backupServer.register(user, password, _userStore.get(user), ServerInterface.SERVER);
+					backupServer.login(user, password, _userStore.get(user), ServerInterface.SERVER);
 				}
 			}
 		} catch(Exception ex) {
@@ -125,22 +145,22 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
 	 * @return True if user name is free, false otherwise
 	 */
 	@Override
-	public boolean register(String userName, String password, ClientInterface clientObject, int sentBy) {
-		if (_userStore.get(userName) != null)
+	public boolean login(String userName, String password, ClientInterface clientObject, int sentBy) {
+		
+		if (_userStore.get(userName) != null) {
+			System.out.println("nicht eingeloggt!!!");
 			return false;
+		}
+		
 		
 		_userStore.put(userName, clientObject);
-		
-//		try {
-//			clientObject.notifyMessage("Server", "Welcome " + userName);
-//		} catch(RemoteException ex) {
-//			System.out.println(ex.getMessage());
-//		}
+		this.notifyUserListChanged();
+
 		
 		if((sentBy == ServerInterface.CLIENT) && (backupServer != null)) {
 			try {
 				backupServer.ping();
-				backupServer.register(userName, password, clientObject, ServerInterface.SERVER);
+				backupServer.login(userName, password, clientObject, ServerInterface.SERVER);
 			} catch(Exception ex) {
 				System.out.println("backup Server not responding");
 				resetBackupServer();
@@ -156,13 +176,15 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
 	 * @param sentBy Identify whether the method was called by a Client or a Server
 	 */
 	@Override	
-	public void unregister(String username, int sentBy) {
+	public void logout(String username, int sentBy) {
 		_userStore.remove(username);
+		
+		notifyUserListChanged();
 		
 		if((sentBy == ServerInterface.CLIENT) && (backupServer != null)) {
 			try {
 				backupServer.ping();
-				backupServer.unregister(username, ServerInterface.SERVER);
+				backupServer.logout(username, ServerInterface.SERVER);
 			} catch(Exception ex) {
 				System.out.println("backup Server not responding");
 				resetBackupServer();
