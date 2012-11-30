@@ -8,6 +8,7 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.JTextArea;
 import javax.swing.JButton;
+import javax.swing.JLabel;
 
 
 public class MessageWindow extends JFrame {
@@ -16,6 +17,8 @@ public class MessageWindow extends JFrame {
 	private String mReceiver;
 	private JTextArea txtConversation, txtMessage;
 	private ClientGUI mInterface;
+	private JLabel lblEnterYourMessage;
+	private JLabel lblConversationHistory;
 
 
 	/**
@@ -29,7 +32,7 @@ public class MessageWindow extends JFrame {
 				hideWindow();
 			}
 		});
-		setBounds(100, 100, 450, 300);
+		setBounds(100, 100, 450, 345);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
@@ -37,19 +40,27 @@ public class MessageWindow extends JFrame {
 		
 		txtConversation = new JTextArea();
 		txtConversation.setEditable(false);
-		txtConversation.setBounds(12, 12, 418, 105);
+		txtConversation.setBounds(12, 30, 418, 145);
 		contentPane.add(txtConversation);
 		
 		txtMessage = new JTextArea();
-		txtMessage.setBounds(12, 127, 418, 88);
+		txtMessage.setBounds(12, 200, 418, 69);
 		contentPane.add(txtMessage);
 		
 		mInterface = inter;
 		mReceiver = receiver;
 		
 		JButton btnSendMessage = new JButton("Send Message");
-		btnSendMessage.setBounds(12, 227, 418, 25);
+		btnSendMessage.setBounds(12, 281, 418, 25);
 		contentPane.add(btnSendMessage);
+		
+		lblEnterYourMessage = new JLabel("Enter your Message here:");
+		lblEnterYourMessage.setBounds(12, 181, 418, 15);
+		contentPane.add(lblEnterYourMessage);
+		
+		lblConversationHistory = new JLabel("Conversation history:");
+		lblConversationHistory.setBounds(12, 12, 418, 15);
+		contentPane.add(lblConversationHistory);
 		btnSendMessage.addActionListener(new ActionListener() {
 
 			@Override

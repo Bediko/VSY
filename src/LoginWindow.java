@@ -5,6 +5,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
+import javax.swing.JLabel;
 
 
 public class LoginWindow extends JFrame {
@@ -24,12 +25,12 @@ public class LoginWindow extends JFrame {
 		contentPane.setLayout(null);
 		
 		txtUser = new JTextField();
-		txtUser.setBounds(12, 90, 158, 19);
+		txtUser.setBounds(12, 55, 158, 19);
 		contentPane.add(txtUser);
 		txtUser.setColumns(10);
 		
 		txtPass = new JTextField();
-		txtPass.setBounds(12, 118, 158, 19);
+		txtPass.setBounds(12, 106, 158, 19);
 		contentPane.add(txtPass);
 		txtPass.setColumns(10);
 		
@@ -45,6 +46,14 @@ public class LoginWindow extends JFrame {
 		});
 		btnCheckIn.setBounds(36, 149, 117, 25);
 		contentPane.add(btnCheckIn);
+		
+		JLabel lblUsername = new JLabel("Username:");
+		lblUsername.setBounds(12, 36, 158, 19);
+		contentPane.add(lblUsername);
+		
+		JLabel lblPassword = new JLabel("Password:");
+		lblPassword.setBounds(12, 89, 158, 15);
+		contentPane.add(lblPassword);
 	}
 	
 	public void close() {
