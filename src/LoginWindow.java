@@ -2,7 +2,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 import javax.swing.JLabel;
@@ -29,7 +31,7 @@ public class LoginWindow extends JFrame {
 		contentPane.add(txtUser);
 		txtUser.setColumns(10);
 		
-		txtPass = new JTextField();
+		txtPass = new JPasswordField();
 		txtPass.setBounds(12, 106, 158, 19);
 		contentPane.add(txtPass);
 		txtPass.setColumns(10);
@@ -41,6 +43,14 @@ public class LoginWindow extends JFrame {
 				mInterface.setPass(txtPass.getText());
 				if(mInterface.login()) {
 					close();
+				}
+				else {
+					JOptionPane.showOptionDialog(null, "Der Login war nicht erfolgreich. Mögliche Gründe:\n\n" +
+							"- falscher Username\n" +
+							"- falsches Passwort\n" +
+							"- Sie sind auf einem anderen PC angemeldet", 
+							"Fehler beim Login", 
+							JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE, null, null, null);
 				}
 			}
 		});
@@ -54,6 +64,10 @@ public class LoginWindow extends JFrame {
 		JLabel lblPassword = new JLabel("Password:");
 		lblPassword.setBounds(12, 89, 158, 15);
 		contentPane.add(lblPassword);
+		
+		JButton btnRegister = new JButton("Create User");
+		btnRegister.setBounds(12, 240, 158, 25);
+		contentPane.add(btnRegister);
 	}
 	
 	public void close() {

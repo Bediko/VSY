@@ -116,10 +116,8 @@ public class ClientGUI implements ClientInterface {
 	 */
 	public boolean login() {
 		boolean loggedIn = false;
-		System.out.println("user: "+mUserName+", pass: "+mUserPass);
 		try {
 			loggedIn = mServerInt.login(mUserName, mUserPass, mInstance, ServerInterface.CLIENT);
-			System.out.println("loggedIn? -"+loggedIn);
 		} catch(Exception ex){
 			if(connect())
 				return login();
@@ -197,7 +195,6 @@ public class ClientGUI implements ClientInterface {
 	 * @param message A String that represents the Message
 	 */
 	public void sendMessage(String receiver, String message) {
-		System.out.println("neue Nachricht!!");
 		
 		try {
 			mServerInt.sendMessage(mUserName, receiver, message, ServerInterface.CLIENT);

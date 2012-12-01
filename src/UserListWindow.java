@@ -21,7 +21,6 @@ public class UserListWindow extends JFrame {
 	private ClientGUI mInterface;
 	
 	public UserListWindow(ClientGUI inter) {
-		System.out.println("Konstruktor");
 		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent e) {
