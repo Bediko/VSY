@@ -26,7 +26,11 @@ public class MessageWindow extends JFrame {
 	 */
 	public MessageWindow(String receiver, ClientGUI inter) {
 		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-		setTitle("Konversation mit " + receiver);
+		
+		mInterface = inter;
+		mReceiver = receiver;
+		
+		setTitle(mInterface.getUser() + " an " + mReceiver);
 		addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent e) {
 				hideWindow();
@@ -46,9 +50,6 @@ public class MessageWindow extends JFrame {
 		txtMessage = new JTextArea();
 		txtMessage.setBounds(12, 200, 418, 69);
 		contentPane.add(txtMessage);
-		
-		mInterface = inter;
-		mReceiver = receiver;
 		
 		JButton btnSendMessage = new JButton("Send Message");
 		btnSendMessage.setBounds(12, 281, 418, 25);

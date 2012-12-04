@@ -48,7 +48,8 @@ public class LoginWindow extends JFrame {
 					JOptionPane.showOptionDialog(null, "Der Login war nicht erfolgreich. Mögliche Gründe:\n\n" +
 							"- falscher Username\n" +
 							"- falsches Passwort\n" +
-							"- Sie sind auf einem anderen PC angemeldet", 
+							"- Sie sind auf einem anderen PC angemeldet\n" +
+							"- der Server ist nicht erreichbar", 
 							"Fehler beim Login", 
 							JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE, null, null, null);
 				}
@@ -66,6 +67,24 @@ public class LoginWindow extends JFrame {
 		contentPane.add(lblPassword);
 		
 		JButton btnRegister = new JButton("Create User");
+		btnRegister.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				mInterface.setUser(txtUser.getText());
+				mInterface.setPass(txtPass.getText());
+				if(mInterface.register()) {
+					mInterface.login();
+					close();
+				}
+				else {
+					JOptionPane.showOptionDialog(null, "Die Registrierung war nicht erfolgreich. Mögliche Gründe:\n\n" +
+							"- Username existiert bereits\n" +
+							"- der Server ist nicht erreichbar", 
+							"Fehler beim Login", 
+							JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE, null, null, null);					
+				}
+					
+			}
+		});
 		btnRegister.setBounds(12, 240, 158, 25);
 		contentPane.add(btnRegister);
 	}

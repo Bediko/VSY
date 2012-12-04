@@ -120,20 +120,21 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
 	 */
 	@Override
 	public boolean newUser(String userName, String password, int sentBy) {
-		// TODO implementation
-		//db.register(userName, password);
-		if((sentBy == ServerInterface.CLIENT) && (backupServer != null)) {
-			try {
-				backupServer.ping();
-				backupServer.newUser(userName, password, ServerInterface.SERVER);
-			} catch(Exception ex) {
-				System.out.println("backup Server not responding");
-				resetBackupServer();
-			}
-		}
+		boolean retVal = false;
+		
+		retVal = db.register(userName, password);
+//		if((sentBy == ServerInterface.CLIENT) && (backupServer != null)) {
+//			try {
+//				backupServer.ping();
+//				backupServer.newUser(userName, password, ServerInterface.SERVER);
+//			} catch(Exception ex) {
+//				System.out.println("backup Server not responding");
+//				resetBackupServer();
+//			}
+//		}
 			
 		
-		return true;
+		return retVal;
 	}
 	
 	
@@ -147,8 +148,8 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
 	@Override
 	public boolean login(String userName, String password, ClientInterface clientObject, int sentBy) {
 		
-		if (_userStore.get(userName) != null) {
-			System.out.println("nicht eingeloggt!!!");
+		if (!db.checkUser(userName, password)) {
+			System.out.println("falscher Username oder falsches Passwort");
 			return false;
 		}
 		

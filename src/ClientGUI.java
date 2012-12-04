@@ -133,6 +133,21 @@ public class ClientGUI implements ClientInterface {
 	}
 	
 	
+	public boolean register() {
+		boolean registered = false;
+		
+		try {
+			registered = mServerInt.newUser(mUserName, mUserPass, ServerInterface.CLIENT);
+		} catch(Exception ex) {
+			if(connect())
+				return register();
+			System.out.println("A Login-Error occured: " + ex.getMessage());
+			return false;
+		}
+		return registered;
+	}
+	
+	
 	/**
 	 * action performed when the user explicitly logs out and doesnt want to exit the application.
 	 * the login-dialog is shown again.
