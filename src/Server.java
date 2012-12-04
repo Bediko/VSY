@@ -281,7 +281,10 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
 	 * Connects to the database
 	 */
 	public void connect_db(){
-		db = new Database("jdbc:postgresql://localhost/vsy","vsy","vsy");
+		if(!secondary)
+			db = new Database("jdbc:postgresql://localhost/vsy","vsy","vsy");
+		else
+			db = new Database("jdbc:postgresql://localhost/vsy","vsy2","vsy2");
 	}
 	
 	
