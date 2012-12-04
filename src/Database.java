@@ -83,6 +83,12 @@ public class Database {
 		}
 	}
 	
+	/**
+	 * Checks if a relationship between buddies already exists
+	 * @param user actual user
+	 * @param friend new friend
+	 * @return true if friendship already exists, false otherwise
+	 */
 	private boolean checkFriendship(String user, String friend){
 		Statement st;
 		ResultSet rs;
@@ -128,6 +134,11 @@ public class Database {
 		return true;
 	}
 	
+	/**
+	 * Gets buddies from the database
+	 * @param user actual user
+	 * @return Arraylist of Buddies
+	 */
 	public ArrayList<String> getBuddies(String user){
 		ArrayList<String> buddies= new ArrayList<String>();
 		Statement st;
@@ -148,4 +159,20 @@ public class Database {
 		}
 		return buddies;
 	}
+	
+	public boolean storeMessage(String sender, String receiver, String message){
+		PreparedStatement st;
+		Integer rs;
+		String query;
+		query="INSERT INTO messages(sender,receiver,message) VALUES('"+sender+"','"+receiver+"','"+message+")";
+		try {
+			st = conn.prepareStatement(query);
+			rs = st.executeUpdate();
+			st.close();
+		} catch (SQLException e) {
+			return false;
+		}
+		return true;
+	}
+	//TODO getmessage, deletemessage
 }
