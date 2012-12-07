@@ -64,9 +64,15 @@ public class ClientGUI implements ClientInterface {
 	}
 	
 	
+	
+	public boolean newBuddy(String name) {
+		//TODO implement newBuddy
+		return true;
+	}
+	
 	/**
 	 * updates the list of online Users
-	 * @param users Strin-Array of usernames 
+	 * @param users String-Array of usernames 
 	 */
 	@Override
 	public void updateUserList(String[] users) throws RemoteException {

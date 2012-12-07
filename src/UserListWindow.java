@@ -6,6 +6,7 @@ import java.awt.event.WindowEvent;
 import javax.swing.DefaultListModel;
 import javax.swing.JFrame;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.JButton;
@@ -38,7 +39,7 @@ public class UserListWindow extends JFrame {
 		mListModel = new DefaultListModel<String>();
 		
 		mUserList = new JList<String>();
-		mUserList.setBounds(12, 12, 134, 249);
+		mUserList.setBounds(12, 58, 134, 203);
 		mUserList.setModel(mListModel);
 		mUserList.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
@@ -63,6 +64,21 @@ public class UserListWindow extends JFrame {
 		btnLogout.setBounds(12, 273, 134, 38);
 		
 		contentPane.add(btnLogout);
+		
+		JButton btnAddBuddy = new JButton("Add Buddy");
+		btnAddBuddy.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				String newBuddy = (String)JOptionPane.showInputDialog(
+	                    null,
+	                    "Enter an existing Username:",
+	                    "New Friendship",
+	                    JOptionPane.PLAIN_MESSAGE,
+	                    null,null, null);
+				mInterface.newBuddy(newBuddy);
+			}
+		});
+		btnAddBuddy.setBounds(12, 12, 134, 34);
+		contentPane.add(btnAddBuddy);
 	}
 	
 	/**

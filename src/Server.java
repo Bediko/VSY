@@ -123,19 +123,22 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
 		boolean retVal = false;
 		
 		retVal = db.register(userName, password);
-//		if((sentBy == ServerInterface.CLIENT) && (backupServer != null)) {
-//			try {
-//				backupServer.ping();
-//				backupServer.newUser(userName, password, ServerInterface.SERVER);
-//			} catch(Exception ex) {
-//				System.out.println("backup Server not responding");
-//				resetBackupServer();
-//			}
-//		}
+		if((sentBy == ServerInterface.CLIENT) && (backupServer != null)) {
+			try {
+				backupServer.ping();
+				backupServer.newUser(userName, password, ServerInterface.SERVER);
+			} catch(Exception ex) {
+				System.out.println("backup Server not responding");
+				resetBackupServer();
+			}
+		}
 			
 		
 		return retVal;
 	}
+	
+	
+	
 	
 	
 	/**
