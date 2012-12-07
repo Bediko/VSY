@@ -4,7 +4,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.HashMap;
+
+import com.sun.xml.internal.bind.v2.schemagen.xmlschema.List;
 
 /**
  * Connects to the database, sends queries and returns the results
@@ -79,11 +82,97 @@ public class Database {
 			return false;
 		}
 	}
-		
 	
-	public static void main(String[] args) {
-		// nothing to do here
-
+	/**
+	 * Checks if a relationship between buddies already exists
+	 * @param user actual user
+	 * @param friend new friend
+	 * @return true if friendship already exists, false otherwise
+	 */
+	private boolean checkFriendship(String user, String friend){
+		Statement st;
+		ResultSet rs;
+		String query;
+		
+		try {
+			st = conn.createStatement();
+			query="SELECT * from friends WHERE friend1='"+user+"' AND friend2='"+friend+"'";
+			rs = st.executeQuery(query);
+			if (rs.next()){
+				return true;
+			}
+			else{
+				return false;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
 	}
-
+	
+	
+	/**
+	 * Adds a new friendship in the database
+	 * @param user actual user
+	 * @param friend new friend
+	 * @return true if insertion was successful, false otherwise
+	 */
+	public boolean addBuddies(String user, String friend){
+		PreparedStatement st;
+		Integer rs;
+		String query;
+		if(!checkFriendship(user,friend)){
+			query="INSERT INTO friends(friend1,friend2) VALUES('"+user+"','"+friend+"')";
+			try {
+				st = conn.prepareStatement(query);
+				rs = st.executeUpdate();
+				st.close();
+			} catch (SQLException e) {
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	/**
+	 * Gets buddies from the database
+	 * @param user actual user
+	 * @return Arraylist of Buddies
+	 */
+	public ArrayList<String> getBuddies(String user){
+		ArrayList<String> buddies= new ArrayList<String>();
+		Statement st;
+		ResultSet rs;
+		String query;	
+		try {
+			st = conn.createStatement();
+			query="SELECT t.friend1 FROM"
+					+" (SELECT * FROM friends f where f.friend1='"+user+"' OR f.friend2 = '"+user+"')t"
+					+" JOIN friends w ON t.friend1=w.friend2 AND t.friend2=w.friend1 AND t.friend1!='"+user+"'";
+			rs = st.executeQuery(query);
+			while (rs.next()){
+				buddies.add(rs.getString(1));
+			}
+			rs.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return buddies;
+	}
+	
+	public boolean storeMessage(String sender, String receiver, String message){
+		PreparedStatement st;
+		Integer rs;
+		String query;
+		query="INSERT INTO messages(sender,receiver,message) VALUES('"+sender+"','"+receiver+"','"+message+")";
+		try {
+			st = conn.prepareStatement(query);
+			rs = st.executeUpdate();
+			st.close();
+		} catch (SQLException e) {
+			return false;
+		}
+		return true;
+	}
+	//TODO getmessage, deletemessage
 }
