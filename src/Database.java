@@ -164,13 +164,13 @@ public class Database {
 		PreparedStatement st;
 		Integer rs;
 		String query;
-		query="INSERT INTO messages(sender,receiver,message) VALUES('"+sender+"','"+receiver+"','"+message+")";
+		query="INSERT INTO messages(sender,receiver,message) VALUES('"+sender+"','"+receiver+"','"+message+"')";
 		try {
 			st = conn.prepareStatement(query);
 			rs = st.executeUpdate();
 			st.close();
 		} catch (SQLException e) {
-			return false;
+			System.out.println(e.getMessage());
 		}
 		return true;
 	}

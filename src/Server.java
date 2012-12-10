@@ -245,10 +245,26 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
 	 */
 	@Override
 	public void sendMessage(String sender, String receiver, String message, int sentBy) throws RemoteException {
-		ClientInterface client = _userStore.get(receiver);
+		System.out.println("sending ...");
+		if(_userStore.get(receiver) != null) {
+			System.out.println("user is online");
+			ClientInterface client = _userStore.get(receiver);
+			if(client != null)
+				client.notifyMessage(sender, message);
+		} else {
+			System.out.println("user not online!!");
+			db.storeMessage(sender, receiver, message);
 		
-		if(client != null)
-			client.notifyMessage(sender, message);
+			if((sentBy == ServerInterface.CLIENT) && (backupServer != null)) {
+				try {
+					backupServer.ping();
+					backupServer.sendMessage(sender, receiver, message, ServerInterface.SERVER);
+				} catch(Exception ex) {
+					System.out.println("backup Server not responding");
+					resetBackupServer();
+				}
+			}
+		}
 	}
 	
 	/**
