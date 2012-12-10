@@ -8,8 +8,11 @@ import java.rmi.server.UnicastRemoteObject;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+
+import sun.util.BuddhistCalendar;
 /**
  * A server implementation of an instant messenger.
  * @author Michael, Simon
@@ -35,7 +38,7 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
 		try {
 			for(String user : _userStore.keySet()) {
 				System.out.println("user: "+user);
-				_userStore.get(user).updateUserList(getAllUser());
+				_userStore.get(user).updateUserList(getBuddies(user));
 			}
 		} catch (RemoteException e) {
 			System.out.println("Error: " + e.getMessage());
@@ -94,8 +97,7 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
 			connectBackupServer();
 			if(backupServer != null) {
 				for(String user : getAllUser()) {
-					String password = "";
-					// TODO get password from Database
+					String password = _userStore.get(user).getPass();
 					backupServer.login(user, password, _userStore.get(user), ServerInterface.SERVER);
 				}
 			}
@@ -138,7 +140,28 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
 	}
 	
 	
+	public boolean addBuddy(String user, String buddy, int sentBy) {
+		boolean retVal = db.addBuddies(user, buddy);
+		
+		if((sentBy == ServerInterface.CLIENT) && (backupServer != null) && (retVal == true)) {
+			try {
+				backupServer.ping();
+				backupServer.addBuddy(user, buddy, ServerInterface.SERVER);
+			} catch(Exception ex) {
+				System.out.println("backup Server not responding");
+				resetBackupServer();
+			}
+		}
+		
+		notifyUserListChanged();
+		
+		return retVal;
+	}
 	
+	
+	public String[] getBuddies(String user) {
+		return db.getBuddies(user).toArray(new String[0]);
+	}
 	
 	
 	/**

@@ -14,4 +14,6 @@ public interface ServerInterface extends Remote {
 	public void sendMessage(String sender, String receiver, String message, int sentBy) throws RemoteException;
 	public boolean ping() throws RemoteException;
 	public void requestInit() throws RemoteException;
+	public boolean addBuddy(String user, String buddy, int sentBy) throws RemoteException;
+	public String[] getBuddies(String user) throws RemoteException;
 }

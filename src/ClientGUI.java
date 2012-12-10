@@ -39,7 +39,10 @@ public class ClientGUI implements ClientInterface {
 	}
 	public void setPass(String pass) {
 		mUserPass = pass;
-	}	
+	}
+	public String getPass() {
+		return mUserPass;
+	}
 	
 	
 	
@@ -66,7 +69,16 @@ public class ClientGUI implements ClientInterface {
 	
 	
 	public boolean newBuddy(String name) {
-		//TODO implement newBuddy
+		boolean retVal = false;
+		// TODO hier gehts weiter
+		try {
+			retVal = mServerInt.addBuddy(mUserName, name, ServerInterface.CLIENT);
+		} catch(Exception ex){
+			if(connect())
+				return newBuddy(name);
+			System.out.println("An Error occured in addBuddy: " + ex.getMessage());
+			return false;
+		}
 		return true;
 	}
 	
@@ -102,6 +114,11 @@ public class ClientGUI implements ClientInterface {
 			} catch(Exception ex) {
 				System.out.println("Server 1 is not responding. \nRetrying to connect ...");
 			}
+			try {
+				Thread.sleep(2000);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
 		}
 		for(int i = 0; i < 3; i++) {
 			try {
@@ -112,6 +129,11 @@ public class ClientGUI implements ClientInterface {
 			} catch(Exception ex) {
 				System.out.println("Server 2 is not responding. \nRetrying to connect ...");
 			}		
+			try {
+				Thread.sleep(2000);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
 		}
 		return false;
 	}
