@@ -160,6 +160,13 @@ public class Database {
 		return buddies;
 	}
 	
+	/**
+	 * Stores a message in the database
+	 * @param sender sending user
+	 * @param receiver receiving user
+	 * @param message message
+	 * @return
+	 */
 	public boolean storeMessage(String sender, String receiver, String message){
 		PreparedStatement st;
 		Integer rs;
@@ -174,5 +181,64 @@ public class Database {
 		}
 		return true;
 	}
-	//TODO getmessage, deletemessage
+	
+	/**
+	 * Gets all Messages for a Person o0ut of the database
+	 * @param receiver User whose messages should be read
+	 * @return Hashmap with sender and all their sended messages paired
+	 */
+	public HashMap<String,ArrayList<String>> getMessages(String receiver){
+		HashMap<String,ArrayList<String>> messages = new HashMap<String,ArrayList<String>>();
+		Statement st;
+		ResultSet rs;
+		String query;
+		ArrayList<String> temp = new ArrayList<String>();
+		String sender=null;
+		String oldsender;
+
+		try {
+			st = conn.createStatement();
+			query="SELECT sender,message FROM messages WHERE receiver='"+receiver+"' ORDER BY sender ASC" ;
+			rs = st.executeQuery(query);
+			while (rs.next()){
+				oldsender = sender;
+				sender=rs.getString(1).trim();
+				if(oldsender!=null && !oldsender.equals(sender)){
+					messages.put(oldsender, temp);
+					temp = new ArrayList<String>();
+				}
+				temp.add(rs.getString(2));
+			}
+			rs.close();
+			messages.put(sender, temp);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return messages;
+	}
+	/**
+	 * deletes Messages in the database
+	 * @param sender User who send 
+	 * @param receiver User who received
+	 * @param message
+	 * @return
+	 */
+	public boolean deleteMessage(String sender, String receiver, String message){
+		PreparedStatement st;
+		Integer rs;
+		String query;
+		query="DELETE FROM messages WHERE sender='"+sender+"' AND receiver='"+receiver+"' AND message='"+message+"'";
+		try {
+			st = conn.prepareStatement(query);
+			rs = st.executeUpdate();
+			st.close();
+		} catch (SQLException e) {
+			System.out.println(e.getMessage());
+			System.out.println("huhjiuhjohjiihjiu");
+			return false;
+		}
+		return true;
+	}
+	
+// deletemessage
 }

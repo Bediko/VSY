@@ -347,6 +347,7 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
 			server.connect();
 			server.connect_db();
 			
+			
 			while(true) {
 				if(server.getBackupServer() != null) {
 					try {
