@@ -269,11 +269,25 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
 	
 	
 	
-	public String[] getMessages(String user) throws RemoteException {
-		
-		// TODO implement getMessage on Server
-		return new String[0];		
+	public HashMap<String, ArrayList<String>> getMessages(String user) throws RemoteException {
+		return db.getMessages(user);
 	}
+	
+	
+	public void deleteMessage(String sender, String receiver, String message, int sentBy) {
+		db.deleteMessage(sender, receiver, message);
+		
+		if((sentBy == ServerInterface.CLIENT) && (backupServer != null)) {
+			try {
+				backupServer.ping();
+				backupServer.deleteMessage(sender, receiver, message, ServerInterface.SERVER);
+			} catch(Exception ex) {
+				System.out.println("backup Server not responding");
+				resetBackupServer();
+			}
+		}
+	}
+	
 	
 	/**
 	 * Determinate if the server will be the primary or the secondary server
@@ -370,7 +384,7 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
 				}
 				
 				System.out.println("Users registered: " + Arrays.toString(server._userStore.keySet().toArray(new String[0])));
-				Thread.sleep(5000);
+				Thread.sleep(2000);
 			}
 			
 		} catch(Exception ex) {

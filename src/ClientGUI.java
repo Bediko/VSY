@@ -1,7 +1,10 @@
 import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.ArrayList;
 import java.util.HashMap;
+
+import com.sun.org.apache.xml.internal.serializer.utils.Messages;
 
 
 public class ClientGUI implements ClientInterface {
@@ -156,7 +159,26 @@ public class ClientGUI implements ClientInterface {
 		if(loggedIn) {
 			mListWindow.setTitle(mUserName);
 			mListWindow.setVisible(true);
+			HashMap<String, ArrayList<String>> messages = new HashMap<String, ArrayList<String>>();
+			try {
+				 messages = mServerInt.getMessages(mUserName);
+			} catch(Exception ex) {
+				System.out.println("Error while receiving messages: " + ex.getMessage());
+			}
 			
+			for(String sender : messages.keySet()) {
+				if(sender == null)
+					break;
+				
+				for(String message : messages.get(sender)) {
+					try {
+						notifyMessage(sender, message);
+						mServerInt.deleteMessage(sender, mUserName, message, ServerInterface.CLIENT);
+					} catch (RemoteException e) {
+						e.printStackTrace();
+					}
+				}
+			}
 		}
 		return loggedIn;
 	}
