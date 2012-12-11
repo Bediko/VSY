@@ -156,6 +156,7 @@ public class ClientGUI implements ClientInterface {
 		if(loggedIn) {
 			mListWindow.setTitle(mUserName);
 			mListWindow.setVisible(true);
+			
 		}
 		return loggedIn;
 	}

@@ -54,21 +54,21 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
 	 * Method to get the reference to the backup-server
 	 * @return returns the reference to the backup-server
 	 */
-	public ServerInterface getBackupServer() {
+	private ServerInterface getBackupServer() {
 		return backupServer;
 	}
 	
 	/**
 	 * resets the backupServer to "null"
 	 */
-	public void resetBackupServer() {
+	private void resetBackupServer() {
 		backupServer = null;
 	}
 	
 	/**
 	 * connects to the backupServer or set it to "null", if none was found
 	 */
-	public void connectBackupServer() {
+	private void connectBackupServer() {
 		try {
 			if(secondary)
 				backupServer = (ServerInterface) Naming.lookup("rmi://127.0.0.1:9090/server1");
@@ -92,7 +92,7 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
 	/**
 	 * register each Client in _userStore at the other Server
 	 */
-	public void initBackupServer() {
+	private void initBackupServer() {
 		try {
 			connectBackupServer();
 			if(backupServer != null) {
@@ -267,11 +267,19 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
 		}
 	}
 	
+	
+	
+	public String[] getMessages(String user) throws RemoteException {
+		
+		// TODO implement getMessage on Server
+		return new String[0];		
+	}
+	
 	/**
 	 * Determinate if the server will be the primary or the secondary server
 	 * @return True when Server is secondary, false otherwise
 	 */
-	public boolean is_secondary(){
+	private boolean is_secondary(){
 		try{
 			ServerInterface remoteObj = (ServerInterface) Naming.lookup("rmi://127.0.0.1:9090/server1");
 			if(remoteObj.ping()){
@@ -288,7 +296,7 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
 	 * Registers the server at the rmi registry. 
 	 * The binded address depends if the server is secondary or not.
 	 */
-	public void connect(){
+	private void connect(){
 		try {
 			if(!is_secondary()){
 				name ="rmi://127.0.0.1:9090/server1";
@@ -323,7 +331,7 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
 	/**
 	 * Connects to the database
 	 */
-	public void connect_db(){
+	private void connect_db(){
 		if(!secondary)
 			db = new Database("jdbc:postgresql://localhost/vsy","vsy","vsy");
 		else
@@ -368,5 +376,5 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
 			System.out.println(ex.getMessage());
 		}
 		
-	}	
+	}
 }

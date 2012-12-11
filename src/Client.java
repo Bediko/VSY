@@ -28,6 +28,11 @@ public class Client implements ClientInterface {
 		_password = "";
 	}
 	
+	@Override
+	public String getPass() throws RemoteException {
+		return _password;
+	}
+	
 	/**
 	 * Delivers a message to the User, sent by another User
 	 * @param sender The sender of the Message
