@@ -93,16 +93,32 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
 	 * register each Client in _userStore at the other Server
 	 */
 	private void initBackupServer() {
-		// TODO is kaputt!!!!
 		try {
 			connectBackupServer();
 			if(backupServer != null) {
 				
+				// get information from database
 				HashMap<String, ArrayList<String>> tblMessages;
 				HashMap<String, String> tblUser = db.getUsers();
 				HashMap<String,HashMap<String,String>> tblFriendships = db.getFriendships();
+				System.out.println("User: " + tblUser.toString());
+				System.out.println("friends: " + tblFriendships.toString());
+				
+				// register the users
 				for(String user : tblUser.keySet()) {
 					backupServer.newUser(user, tblUser.get(user), ServerInterface.SERVER);
+				}
+				
+				
+				// register the friendships
+				for(String id : tblFriendships.keySet()) {
+					for(String user : tblFriendships.get(id).keySet()) {
+						backupServer.addBuddy(user, tblFriendships.get(id).get(user), ServerInterface.SERVER);
+					}
+				}
+				
+				// send the messages
+				for(String user : tblUser.keySet()) {
 					tblMessages = db.getMessages(user);
 					for(String sender : tblMessages.keySet()) {
 						for(String message : tblMessages.get(sender)) {
@@ -110,12 +126,8 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
 						}
 					}
 				}
-				for(String id : tblFriendships.keySet()) {
-					for(String user : tblFriendships.get(id).keySet()) {
-						backupServer.addBuddy(user, tblFriendships.get(id).get(user), ServerInterface.SERVER);
-					}
-				}
 				
+				// login the already logged in users
 				for(String user : getAllUser()) {
 					backupServer.login(user, tblUser.get(user), _userStore.get(user), ServerInterface.SERVER);
 				}
@@ -382,6 +394,7 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
 		
 		try {
 			server = new Server();
+			server.is_secondary();
 			server.connect_db();
 			server.connect();
 			System.out.println(db.getUsers().toString());
