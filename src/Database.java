@@ -262,6 +262,52 @@ public class Database {
 		
 	}
 	
+	public HashMap<String,String> getFriendships(){
+		HashMap<String,String> users = new HashMap<String,String>();
+		Statement st;
+		ResultSet rs;
+		String query;
+		query = "SELECT * FROM friends";
+		try{
+			st = conn.createStatement();
+			rs = st.executeQuery(query);
+			while (rs.next()){
+				users.put(rs.getString(1),rs.getString(2));
+			}
+		}catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return users;
+	}
 	
+	public void refresh(){
+		PreparedStatement st;
+		Integer rs;
+		String query;
+		query="DELETE * FROM messages";
+		try {
+			st = conn.prepareStatement(query);
+			rs = st.executeUpdate();
+			st.close();
+		} catch (SQLException e) {
+			System.out.println(e.getMessage());
+		}
+		query="DELETE * FROM friends";
+		try {
+			st = conn.prepareStatement(query);
+			rs = st.executeUpdate();
+			st.close();
+		} catch (SQLException e) {
+			System.out.println(e.getMessage());
+		}
+		query="DELETE * FROM people";
+		try {
+			st = conn.prepareStatement(query);
+			rs = st.executeUpdate();
+			st.close();
+		} catch (SQLException e) {
+			System.out.println(e.getMessage());
+		}
+	}
 	
 }
