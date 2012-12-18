@@ -96,9 +96,14 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
 		try {
 			connectBackupServer();
 			if(backupServer != null) {
+				
+				HashMap<String, String> tblUser = db.getUsers();
+				for(String user : tblUser.keySet()) {
+					backupServer.newUser(user, tblUser.get(user), ServerInterface.SERVER);
+				}			
+				
 				for(String user : getAllUser()) {
-					String password = _userStore.get(user).getPass();
-					backupServer.login(user, password, _userStore.get(user), ServerInterface.SERVER);
+					backupServer.login(user, tblUser.get(user), _userStore.get(user), ServerInterface.SERVER);
 				}
 			}
 		} catch(Exception ex) {
@@ -317,8 +322,10 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
 				Naming.rebind(name, server);
 				System.out.println("Server 1");
 				connectBackupServer();
-				if(backupServer != null)
+				if(backupServer != null) {
 					backupServer.requestInit();
+					db.refresh();
+				}
 			}
 			else{
 				try {
@@ -332,6 +339,7 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
 					System.out.println("Server 2");
 					connectBackupServer();
 					backupServer.requestInit();
+					db.refresh();
 				}
 			}
 			System.out.println("Server binded object successfull!");	
@@ -358,8 +366,8 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
 		
 		try {
 			server = new Server();
-			server.connect();
 			server.connect_db();
+			server.connect();
 			System.out.println(db.getUsers().toString());
 			System.out.println(db.getFriendships().toString());
 			
