@@ -234,11 +234,34 @@ public class Database {
 			st.close();
 		} catch (SQLException e) {
 			System.out.println(e.getMessage());
-			System.out.println("huhjiuhjohjiihjiu");
 			return false;
 		}
 		return true;
 	}
 	
-// deletemessage
+	/**
+	 * 
+	 * @return Hashmap of users as keys and passwords as values
+	 */
+	public HashMap<String,String> getUsers(){
+		HashMap<String,String> users = new HashMap<String,String>();
+		Statement st;
+		ResultSet rs;
+		String query;
+		query = "SELECT * FROM people";
+		try{
+			st = conn.createStatement();
+			rs = st.executeQuery(query);
+			while (rs.next()){
+				users.put(rs.getString(1),rs.getString(2));
+			}
+		}catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return users;
+		
+	}
+	
+	
+	
 }
