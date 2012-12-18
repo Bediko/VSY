@@ -370,6 +370,7 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
 			server.connect();
 			System.out.println(db.getUsers().toString());
 			System.out.println(db.getFriendships().toString());
+
 			
 			
 			while(true) {
