@@ -93,14 +93,28 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
 	 * register each Client in _userStore at the other Server
 	 */
 	private void initBackupServer() {
+		// TODO is kaputt!!!!
 		try {
 			connectBackupServer();
 			if(backupServer != null) {
 				
+				HashMap<String, ArrayList<String>> tblMessages;
 				HashMap<String, String> tblUser = db.getUsers();
+				HashMap<String,HashMap<String,String>> tblFriendships = db.getFriendships();
 				for(String user : tblUser.keySet()) {
 					backupServer.newUser(user, tblUser.get(user), ServerInterface.SERVER);
-				}			
+					tblMessages = db.getMessages(user);
+					for(String sender : tblMessages.keySet()) {
+						for(String message : tblMessages.get(sender)) {
+							backupServer.sendMessage(sender, user, message, ServerInterface.SERVER);
+						}
+					}
+				}
+				for(String id : tblFriendships.keySet()) {
+					for(String user : tblFriendships.get(id).keySet()) {
+						backupServer.addBuddy(user, tblFriendships.get(id).get(user), ServerInterface.SERVER);
+					}
+				}
 				
 				for(String user : getAllUser()) {
 					backupServer.login(user, tblUser.get(user), _userStore.get(user), ServerInterface.SERVER);
@@ -128,7 +142,7 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
 	@Override
 	public boolean newUser(String userName, String password, int sentBy) {
 		boolean retVal = false;
-		
+		System.out.println("register: " + userName + ", " + password);
 		retVal = db.register(userName, password);
 		if((sentBy == ServerInterface.CLIENT) && (backupServer != null)) {
 			try {
@@ -323,8 +337,9 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
 				System.out.println("Server 1");
 				connectBackupServer();
 				if(backupServer != null) {
-					backupServer.requestInit();
+					System.out.println("hier!!!!!!!!!");
 					db.refresh();
+					backupServer.requestInit();
 				}
 			}
 			else{
@@ -338,8 +353,9 @@ public class Server extends UnicastRemoteObject implements ServerInterface {
 					Naming.rebind(name, server);
 					System.out.println("Server 2");
 					connectBackupServer();
-					backupServer.requestInit();
+					System.out.println("hier!!!!!!!!!");
 					db.refresh();
+					backupServer.requestInit();
 				}
 			}
 			System.out.println("Server binded object successfull!");	
