@@ -225,8 +225,8 @@ public class ClientGUI implements ClientInterface {
 	public void clearConversations() {
 		for(String user : mMessageWindows.keySet()) {
 			mMessageWindows.get(user).setVisible(false);
-			mMessageWindows.remove(user);
 		}
+		mMessageWindows.clear();
 	}
 	
 	
